@@ -1,0 +1,59 @@
+const { getDb } = require('./config');
+const db = getDb();
+function saveDocumentTo(collection = '', documentData = {}) {
+	return db.collection(collection).insertOne(documentData);
+}
+
+async function getDatabaseDocument(collection, options = {}) {
+	const query = options.query || {};
+	const documents = await db.collection(collection).find(query).toArray();
+	const document = documents[0];
+	return document;
+}
+async function getDatabaseDocuments(collection, options = {}) {
+	const query = options.query || {};
+	const documents = await db.collection(collection).find(query).toArray();
+	return documents;
+}
+
+function generateCrudRoutes(collection = '') {
+	async function create(req, res) {
+		const data = req.body;
+		await saveDocumentTo(collection, data);
+	}
+	async function readAll(req, res) {
+		const { query } = req;
+
+		const data = await getDatabaseDocuments(collection, query);
+		res.send(data);
+	}
+	async function readOne(req, res) {
+		const { query, params } = req;
+		const document = await getDatabaseDocument(collection, { ...query, ...params });
+		res.send(document);
+	}
+	async function updateOne(req, res) {
+		const { query } = req;
+		const document = await getDatabaseDocument(collection, query);
+		res.send(document);
+	}
+	async function deleteOne(req, res) {
+		const { query } = req;
+		const document = await getDatabaseDocument(collection, query);
+		res.send(document);
+	}
+	let router = require('express').Router();
+
+	router.post('/', create);
+	router.get('/', readAll);
+	router.get('/:id', readOne);
+	router.put('/:id', updateOne);
+	router.delete('/:id', deleteOne);
+	return router;
+}
+module.exports = {
+	saveDocumentTo,
+	getDatabaseDocument,
+	getDatabaseDocuments,
+	generateCrudRoutes
+};
