@@ -4,6 +4,13 @@ const db = getDb();
 function saveDocumentTo(collection = "", documentData = {}) {
   return db.collection(collection).insertOne(documentData);
 }
+function updateDoc(collection = "", docId = "", docData = {}) {
+  const query_id = new mongodb.ObjectId(docId);
+
+  return db
+    .collection(collection)
+    .updateOne({ _id: query_id }, { $set: documentData });
+}
 
 async function getDatabaseDocument(collection, options = {}) {
   const query = options.query || {};
@@ -21,7 +28,6 @@ async function deleteDocument(collection, options = {}) {
   if (query._id) {
     query._id = new mongodb.ObjectId(query._id);
   }
-  console.log(query);
   const deleted = await db.collection(collection).deleteOne(query);
   return deleted;
 }
@@ -47,7 +53,7 @@ function generateCrudRoutes(collection = "") {
   }
   async function updateOne(req, res) {
     const { query } = req;
-    const document = await getDatabaseDocument(collection, query);
+    const document = await updateDoc(collection, query);
     res.send(document);
   }
   async function deleteOne(req, res) {

@@ -5,4 +5,12 @@ module.exports = {
     router: require("./features/movements/router"),
     path: "/movements",
   },
+  surveys: {
+    router: require("./features/surveys/router"),
+    path: "/surveys",
+  },
+  answers: {
+    router: require("./features/answers/router"),
+    path: "/answers",
+  },
 };
