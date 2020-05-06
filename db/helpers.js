@@ -9,7 +9,7 @@ function updateDoc(collection = "", docId = "", docData = {}) {
 
   return db
     .collection(collection)
-    .updateOne({ _id: query_id }, { $set: documentData });
+    .updateOne({ _id: query_id }, { $set: docData });
 }
 
 async function getDatabaseDocument(collection, options = {}) {
@@ -52,8 +52,9 @@ function generateCrudRoutes(collection = "") {
     res.send(document);
   }
   async function updateOne(req, res) {
-    const { query } = req;
-    const document = await updateDoc(collection, query);
+    const { query, body } = req;
+    delete body._id;
+    const document = await updateDoc(collection, query._id, body);
     res.send(document);
   }
   async function deleteOne(req, res) {
